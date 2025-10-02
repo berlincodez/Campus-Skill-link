@@ -1,50 +1,37 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import type { User } from "@/types/models"
-
-export function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
-
-  useEffect(() => {
-    const userStr = localStorage.getItem("user")
-    if (userStr) {
-      setUser(JSON.parse(userStr))
-    }
-    setLoading(false)
-  }, [])
-
-  const logout = () => {
-    localStorage.removeItem("user")
-    setUser(null)
-    router.push("/auth/login")
-  }
-
-  return { user, loading, logout }
-}
+import type React from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "./auth-provider";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth()
-  const router = useRouter()
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/auth/login")
+      console.log("AuthGuard: No user found, redirecting to login");
+      router.push("/auth/login");
+      return;
     }
-  }, [user, loading, router])
+    console.log("AuthGuard: Auth state", { user: !!user, loading });
+  }, [user, loading, router]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+    console.log("AuthGuard: Loading...");
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   if (!user) {
-    return null
+    console.log("AuthGuard: User not authenticated, rendering null");
+    return null;
   }
 
-  return <>{children}</>
+  console.log("AuthGuard: Rendering protected content");
+  return <>{children}</>;
 }

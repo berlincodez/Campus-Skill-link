@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useAuth } from "./auth-guard";
+import { useAuth } from "./auth-provider";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -31,12 +31,36 @@ export function Navbar() {
   const router = useRouter();
   const { user, logout, loading } = useAuth();
 
-  if (loading) {
-    return <div className="h-16 border-b bg-background/80 backdrop-blur" />;
-  }
+  console.log("Navbar auth state:", { user: !!user, loading, pathname });
 
-  if (!user) {
-    return <div className="h-16 border-b bg-background/80 backdrop-blur" />;
+  // During initial load or when logged out, show minimal header
+  if (loading || !user) {
+    return (
+      <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <Image
+              src="/placeholder-logo.svg"
+              width={24}
+              height={24}
+              alt="Logo"
+            />
+            <span className="font-medium">Campus Skill Link</span>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              asChild
+            >
+              <Link href="/auth/login">Sign In</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/auth/signup">Sign Up</Link>
+            </Button>
+          </div>
+        </div>
+      </header>
+    );
   }
 
   if (!user) {

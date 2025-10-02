@@ -37,7 +37,7 @@ export default function FeedClient() {
         <div className="space-y-4">
           {posts.map((p: any) => (
             <PostCard
-              key={p.id}
+              key={p._id}
               post={p}
             />
           ))}

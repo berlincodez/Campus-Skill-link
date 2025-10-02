@@ -1,19 +1,31 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import Link from "next/link"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 export default function SignupPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -22,64 +34,92 @@ export default function SignupPage() {
     major: "",
     department: "",
     bio: "",
-  })
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
+      console.log("Attempting signup with:", { ...formData, password: "***" });
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
+      console.log("Signup response:", {
+        ok: response.ok,
+        status: response.status,
+        data: JSON.stringify(data, null, 2),
+      });
 
       if (!response.ok) {
-        setError(data.error || "Signup failed")
-        setLoading(false)
-        return
+        setError(data.error || "Signup failed");
+        setLoading(false);
+        return;
       }
 
-      // Auto-login after signup
-      const loginResponse = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, password: formData.password }),
-      })
+      console.log("Signup successful, storing user data");
 
-      const loginData = await loginResponse.json()
-      if (loginResponse.ok) {
-        localStorage.setItem("user", JSON.stringify(loginData.user))
-        router.push("/")
+      // The user data should already be properly formatted from the API
+      console.log("User data from API:", JSON.stringify(data.user, null, 2));
+
+      // Additional validation to ensure id field exists
+      if (!data.user.id && data.user._id) {
+        console.log("Converting _id to id in signup");
+        data.user.id = data.user._id;
       }
+
+      // Store the user data
+      const userToStore = {
+        ...data.user,
+        reputationScore: data.user.reputationScore || 0,
+        badges: data.user.badges || [],
+        createdAt: data.user.createdAt || new Date().toISOString(),
+      };
+
+      console.log("Storing user data:", JSON.stringify(userToStore, null, 2));
+      localStorage.setItem("user", JSON.stringify(userToStore));
+
+      // Small delay to ensure localStorage is updated and AuthProvider can pick up changes
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Force a full page reload instead of client-side navigation
+      window.location.href = "/";
     } catch (err) {
-      setError("An error occurred. Please try again.")
-      setLoading(false)
+      setError("An error occurred. Please try again.");
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle>Join Campus SkillLink</CardTitle>
-          <CardDescription>Create your account to start exchanging skills</CardDescription>
+          <CardDescription>
+            Create your account to start exchanging skills
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignup} className="space-y-4">
+          <form
+            onSubmit={handleSignup}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -90,7 +130,9 @@ export default function SignupPage() {
                   type="email"
                   placeholder="you@university.edu"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -101,7 +143,9 @@ export default function SignupPage() {
                 id="password"
                 type="password"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 required
               />
             </div>
@@ -110,7 +154,9 @@ export default function SignupPage() {
                 <Label htmlFor="status">Student Status</Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, status: value })
+                  }
                   required
                 >
                   <SelectTrigger>
@@ -131,7 +177,9 @@ export default function SignupPage() {
                 <Input
                   id="major"
                   value={formData.major}
-                  onChange={(e) => setFormData({ ...formData, major: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, major: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -141,7 +189,9 @@ export default function SignupPage() {
               <Input
                 id="department"
                 value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, department: e.target.value })
+                }
                 required
               />
             </div>
@@ -151,23 +201,32 @@ export default function SignupPage() {
                 id="bio"
                 placeholder="Tell us about your skills and interests..."
                 value={formData.bio}
-                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, bio: e.target.value })
+                }
                 rows={3}
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+            >
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link href="/auth/login" className="text-primary hover:underline">
+            <Link
+              href="/auth/login"
+              className="text-primary hover:underline"
+            >
               Login
             </Link>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,8 +1,23 @@
-export type PostType =
-  | "offer"
-  | "need"
-  | "mentorship-offer"
-  | "mentorship-need";
+export type PostType = "offer" | "need" | "mentorship";
+
+export interface Post {
+  _id?: string;
+  userId: string;
+  type: PostType;
+  title: string;
+  description: string;
+  category: string;
+  department: string;
+  location?: string;
+  createdAt: string;
+  acceptedBy?: string; // userId who accepted/expressed interest
+  status?: "open" | "accepted" | "completed";
+  author?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+}
 
 export interface Post {
   _id?: string;
@@ -21,7 +36,6 @@ export interface Post {
 export interface User {
   id: string;
   email: string;
-  password: string; // hashed
   universityEmailVerified: boolean;
   name: string;
   status: "freshman" | "sophomore" | "junior" | "senior" | "grad" | "other";

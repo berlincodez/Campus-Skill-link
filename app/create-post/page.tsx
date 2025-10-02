@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState } from "react";
-import { useAuth } from "@/components/auth-guard";
+import { useAuth } from "@/components/auth-provider";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
