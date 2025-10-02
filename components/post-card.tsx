@@ -24,7 +24,7 @@ export function PostCard({ post }: { post: Post }) {
           <span className="rounded-full border px-2 py-1">{post.department}</span>
         </div>
         <div className="flex justify-end">
-          <Link href={`/posts/${post.id}`}>
+          <Link href={`/posts/${post._id}`}>
             <Button size="sm" variant="secondary">
               View Details
             </Button>

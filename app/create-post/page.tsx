@@ -1,37 +1,66 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useAuth } from "@/components/auth-guard"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
+import type React from "react";
+import { useState } from "react";
+import { useAuth } from "@/components/auth-guard";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
-type PostType = "offer" | "need" | "mentorship" // simplified to match mock API
+type PostType = "offer" | "need" | "mentorship"; // simplified to match mock API
 
-const categories = ["Technology", "Design", "Languages", "General"]
-const departments = ["Computer Science", "Art & Design", "Humanities", "General"]
-
-  const router = useRouter()
-  const { user } = useAuth()
-  const [type, setType] = useState<PostType>("offer")
-  const [loading, setLoading] = useState(false)
+const categories = ["Technology", "Design", "Languages", "General"];
+const departments = [
+  "Computer Science",
+  "Art & Design",
+  "Humanities",
+  "General",
+];
+export default function CreatePostPage() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [type, setType] = useState<PostType>("offer");
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     title: "",
     description: "",
     category: "",
     department: "",
     location: "",
-  })
+  });
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+
+    // Check if user is authenticated
+    if (!user?.id) {
+      alert("Please login to create a post");
+      return;
+    }
+
+    // Validate required fields
+    if (
+      !form.title ||
+      !form.description ||
+      !form.category ||
+      !form.department
+    ) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await fetch("/api/posts", {
         method: "POST",
@@ -39,34 +68,41 @@ const departments = ["Computer Science", "Art & Design", "Humanities", "General"
         body: JSON.stringify({
           type,
           ...form,
-          userId: user?.id,
+          userId: user.id, // Now safe to use as we checked above
         }),
-      })
-      if (!res.ok) throw new Error("Failed to create post")
-      router.push("/")
-      router.refresh()
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Failed to create post");
+      }
+
+      router.push("/");
+      router.refresh();
     } catch (err) {
-      console.error("[v0] Create post error:", err)
-      alert("Could not create the post. Please try again.")
+      console.error("[v0] Create post error:", err);
+      alert("Could not create the post. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   function SegBtn({ value, label }: { value: PostType; label: string }) {
-    const active = type === value
+    const active = type === value;
     return (
       <button
         type="button"
         onClick={() => setType(value)}
         className={cn(
           "rounded-full border px-4 py-1 text-sm",
-          active ? "border-primary text-primary" : "text-muted-foreground hover:text-foreground",
+          active
+            ? "border-primary text-primary"
+            : "text-muted-foreground hover:text-foreground"
         )}
       >
         {label}
       </button>
-    )
+    );
   }
 
   return (
@@ -79,22 +115,38 @@ const departments = ["Computer Science", "Art & Design", "Humanities", "General"
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex gap-2">
-            <SegBtn value="offer" label="Offer" />
-            <SegBtn value="need" label="Need" />
-            <SegBtn value="mentorship" label="Mentorship" />
+            <SegBtn
+              value="offer"
+              label="Offer"
+            />
+            <SegBtn
+              value="need"
+              label="Need"
+            />
+            <SegBtn
+              value="mentorship"
+              label="Mentorship"
+            />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+          >
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
               <Input
                 id="title"
                 placeholder="e.g., Tutoring in Math"
                 value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, title: e.target.value }))
+                }
                 required
               />
-              <p className="text-xs text-muted-foreground">A clear and concise title will attract more attention.</p>
+              <p className="text-xs text-muted-foreground">
+                A clear and concise title will attract more attention.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -103,22 +155,34 @@ const departments = ["Computer Science", "Art & Design", "Humanities", "General"
                 id="description"
                 placeholder="Provide more details about your offer, need, or mentorship."
                 value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
                 required
               />
-              <p className="text-xs text-muted-foreground">Be specific! The more details you provide, the better.</p>
+              <p className="text-xs text-muted-foreground">
+                Be specific! The more details you provide, the better.
+              </p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>Category</Label>
-                <Select onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}>
+                <Label>
+                  Category <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}
+                  required
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (
-                      <SelectItem value={c} key={c}>
+                      <SelectItem
+                        value={c}
+                        key={c}
+                      >
                         {c}
                       </SelectItem>
                     ))}
@@ -127,14 +191,24 @@ const departments = ["Computer Science", "Art & Design", "Humanities", "General"
               </div>
 
               <div className="space-y-2">
-                <Label>Department</Label>
-                <Select onValueChange={(v) => setForm((f) => ({ ...f, department: v }))}>
+                <Label>
+                  Department <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  onValueChange={(v) =>
+                    setForm((f) => ({ ...f, department: v }))
+                  }
+                  required
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a department" />
                   </SelectTrigger>
                   <SelectContent>
                     {departments.map((d) => (
-                      <SelectItem value={d} key={d}>
+                      <SelectItem
+                        value={d}
+                        key={d}
+                      >
                         {d}
                       </SelectItem>
                     ))}
@@ -149,12 +223,17 @@ const departments = ["Computer Science", "Art & Design", "Humanities", "General"
                 id="location"
                 placeholder="Campus library, online, etc."
                 value={form.location}
-                onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, location: e.target.value }))
+                }
               />
             </div>
 
             <div className="flex justify-end">
-              <Button type="submit" disabled={loading}>
+              <Button
+                type="submit"
+                disabled={loading}
+              >
                 {loading ? "Posting..." : "Post"}
               </Button>
             </div>
@@ -162,5 +241,5 @@ const departments = ["Computer Science", "Art & Design", "Humanities", "General"
         </CardContent>
       </Card>
     </main>
-  )
+  );
 }
