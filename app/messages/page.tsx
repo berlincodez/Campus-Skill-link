@@ -35,6 +35,11 @@ interface Conversation {
     id: string;
     title: string;
   } | null;
+  // optional group info for group chats
+  group?: {
+    id: string;
+    name: string;
+  } | null;
 }
 
 export default function MessagesPage() {
@@ -51,19 +56,48 @@ export default function MessagesPage() {
 
   // Fetch conversations
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user) return;
 
     async function fetchConversations() {
       try {
         const res = await fetch(`/api/conversations?userId=${user.id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setConversations(data.conversations);
+        if (!res.ok) {
+          console.error("[v0] Failed to fetch conversations", res.status);
+          setLoading(false);
+          return;
+        }
 
-          // If no active conversation, select the first one
-          if (!activeConversation && data.conversations.length > 0) {
-            setActiveConversation(data.conversations[0].connectionId);
-          }
+        const data = await res.json();
+        // conversations may include group chats; attempt to enrich with group info when needed
+        const enriched = await Promise.all(
+          data.conversations.map(async (c: any) => {
+            if (!c.otherUser && c.group == null) {
+              // try to fetch study group by group id if available on c.post.id
+              if (c.post && c.post.id) {
+                try {
+                  const g = await fetch(`/api/study-groups/${c.post.id}`);
+                  if (g.ok) {
+                    const gd = await g.json();
+                    return {
+                      ...c,
+                      group: {
+                        id: gd.group._id || gd.group.id,
+                        name: gd.group.name,
+                      },
+                    };
+                  }
+                } catch (e) {
+                  // ignore
+                }
+              }
+            }
+            return c;
+          })
+        );
+
+        setConversations(enriched as Conversation[]);
+        if (!activeConversation && enriched.length > 0) {
+          setActiveConversation(enriched[0].connectionId);
         }
       } catch (error) {
         console.error("[v0] Error fetching conversations:", error);
@@ -74,10 +108,9 @@ export default function MessagesPage() {
 
     fetchConversations();
   }, [user]);
-
   // Fetch messages for active conversation
   useEffect(() => {
-    if (!user?.id || !activeConversation) return;
+    if (!user || !user.id || !activeConversation) return;
 
     async function fetchMessages() {
       try {
@@ -165,13 +198,19 @@ export default function MessagesPage() {
             >
               <Avatar className="h-10 w-10">
                 <AvatarFallback>
-                  {conv.otherUser?.name.charAt(0).toUpperCase() || "?"}
+                  {(
+                    (conv.otherUser && conv.otherUser.name) ||
+                    (conv.group && conv.group.name) ||
+                    "?"
+                  )
+                    .charAt(0)
+                    .toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
                   <div className="truncate text-sm font-medium">
-                    {conv.otherUser?.name || "Unknown User"}
+                    {conv.group?.name || conv.otherUser?.name || "Unknown"}
                   </div>
                   {conv.lastMessage && (
                     <div className="text-xs text-muted-foreground">
@@ -207,12 +246,20 @@ export default function MessagesPage() {
             <div className="flex items-center gap-3">
               <Avatar>
                 <AvatarFallback>
-                  {activeConv.otherUser?.name.charAt(0).toUpperCase() || "?"}
+                  {(
+                    (activeConv.group && activeConv.group.name) ||
+                    (activeConv.otherUser && activeConv.otherUser.name) ||
+                    "?"
+                  )
+                    .charAt(0)
+                    .toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <div className="font-medium">
-                  {activeConv.otherUser?.name || "Unknown User"}
+                  {activeConv.group?.name ||
+                    activeConv.otherUser?.name ||
+                    "Unknown"}
                 </div>
                 {activeConv.post && (
                   <div className="text-xs text-muted-foreground">
