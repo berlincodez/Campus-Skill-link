@@ -33,9 +33,12 @@ export default function ExploreClient() {
   const query = useMemo(() => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
-    params.set("type", type);
-    params.set("category", category.toLowerCase());
-    params.set("department", department.toLowerCase());
+    // Only include filters when they are not the default 'all'/'All'
+    if (type && type !== "all") params.set("type", type);
+    if (category && category !== "All")
+      params.set("category", category.toLowerCase());
+    if (department && department !== "All")
+      params.set("department", department.toLowerCase());
     return params.toString();
   }, [q, type, category, department]);
 

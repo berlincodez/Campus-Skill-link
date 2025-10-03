@@ -17,7 +17,13 @@ export async function GET(req: NextRequest) {
   if (category) filter.category = category;
   if (department) filter.department = department;
   if (userId) filter.userId = userId;
-  if (q) filter.$text = { $search: q };
+  if (q) {
+    // Use a case-insensitive regex search on common fields so we don't
+    // rely on a MongoDB text index. Escape the query to avoid regex injection.
+    const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = { $regex: escapeRegex(q), $options: "i" };
+    filter.$or = [{ title: re }, { description: re }, { location: re }];
+  }
 
   if (!process.env.MONGODB_URI) {
     const posts = listPosts({ type, category, department, q });
