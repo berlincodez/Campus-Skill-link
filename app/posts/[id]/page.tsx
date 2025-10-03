@@ -19,6 +19,7 @@ export default function PostDetailPage() {
   const [postOwner, setPostOwner] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function fetchPost() {
@@ -138,6 +139,50 @@ export default function PostDetailPage() {
   const handleDecline = async () => {
     alert("Decline functionality not yet implemented.");
     // TODO: Implement decline logic (API and UI)
+  };
+
+  const handleDelete = async () => {
+    if (!isOwner || !post) return;
+    const ok = confirm(
+      "Are you sure you want to delete this post? This cannot be undone."
+    );
+    if (!ok) return;
+    setDeleting(true);
+    try {
+      const derivedPostId = (post as any)._id
+        ? String((post as any)._id)
+        : (post as any).id || params.id;
+
+      // try real API first
+      let res = await fetch(`/api/posts/${derivedPostId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          // include user id for simple ownership enforcement on server
+          ...(user?.id ? { "x-user-id": String(user.id) } : {}),
+        },
+      });
+
+      if (!res.ok) {
+        // fallback to mock endpoint
+        res = await fetch(`/api/mock/posts/${derivedPostId}`, {
+          method: "DELETE",
+        });
+      }
+
+      if (res.ok) {
+        // redirect to my-posts
+        router.push("/my-posts");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(data?.error || "Failed to delete post");
+      }
+    } catch (err) {
+      console.error("Error deleting post:", err);
+      alert("An error occurred while deleting the post");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -269,6 +314,16 @@ export default function PostDetailPage() {
               <p className="text-sm text-muted-foreground">
                 This is your post. You'll be notified when someone accepts it.
               </p>
+              <div className="mt-4">
+                <Button
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="w-full"
+                >
+                  {deleting ? "Deleting..." : "Delete Post"}
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>
