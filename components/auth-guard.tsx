@@ -35,3 +35,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   console.log("AuthGuard: Rendering protected content");
   return <>{children}</>;
 }
+
+// Re-export the hook so callers can import it from this module
+export { useAuth } from "./auth-provider";

@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Drawer, DrawerTrigger, DrawerContent, DrawerClose } from "./ui/drawer";
-import { Menu } from "lucide-react";
+import { Menu, ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
 const links = [
@@ -118,18 +118,23 @@ export function Navbar() {
             </Link>
           ))}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full p-0"
-              >
+            <div className="flex items-center gap-3">
+              <Link href="/profile" className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>
                     {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
                   </AvatarFallback>
                 </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
+                <span className="text-sm text-muted-foreground">{user?.reputationScore ?? 0}</span>
+              </Link>
+
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Open user menu">
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+            </div>
+
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">

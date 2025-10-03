@@ -25,27 +25,48 @@ function ProfileContent() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!user) return;
+  if (!user) return;
+
+  // Immediately show auth-provided user data as a quick fallback while fetching
+  setProfile((prev: any) => prev ?? user);
+
     async function fetchProfile() {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
-        if (!user) return;
         const res = await fetch(`/api/users/${user.id}`);
-        const data = await res.json();
-        // Some endpoints return { user }, some return user directly
-        const profileData = data.user || data;
-        setProfile(profileData);
-        // Fetch posts
-        const postsRes = await fetch(`/api/posts?userId=${user.id}`);
-        const postsData = await postsRes.json();
-        setPosts(postsData.posts || postsData || []);
-      } catch {
-        setProfile(null);
+        if (!res.ok) {
+          // Keep using the auth user as fallback
+          setProfile(user);
+        } else {
+          const data = await res.json();
+          // Some endpoints return { user }, some return user directly
+          const profileData = data.user || data;
+          setProfile(profileData || user);
+        }
+
+        // Fetch posts (best-effort)
+  const postsRes = await fetch(`/api/posts?userId=${user.id}`);
+        if (postsRes.ok) {
+          const postsData = await postsRes.json();
+          setPosts(postsData.posts || postsData || []);
+        } else {
+          setPosts([]);
+        }
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+        // fallback to the auth-provided user information
+        setProfile(user);
         setPosts([]);
       } finally {
         setLoading(false);
       }
     }
+
     fetchProfile();
   }, [user]);
 
@@ -54,6 +75,7 @@ function ProfileContent() {
   }
 
   if (!profile) {
+    // if we reach here and there's no profile nor auth user, show not found
     return <div className="mx-auto max-w-5xl px-4 py-8 text-red-500">Profile not found.</div>
   }
 
@@ -63,14 +85,30 @@ function ProfileContent() {
         <Image src="/placeholder-user.jpg" alt="User" width={96} height={96} className="rounded-full" />
         <div className="flex-1">
           <h1 className="text-3xl font-semibold">{profile.name}</h1>
-          <p className="text-lg text-primary font-medium">{profile.major}, {profile.department}</p>
+          <p className="text-lg text-primary font-medium">{profile.major ?? "-"}, {profile.department ?? "-"}</p>
+          <p className="text-sm text-muted-foreground">{profile.email}</p>
+          {profile.universityEmailVerified !== undefined && (
+            <p className="text-sm text-muted-foreground">University email verified: {profile.universityEmailVerified ? "Yes" : "No"}</p>
+          )}
+          {profile.status && <p className="text-sm text-muted-foreground">Status: {profile.status}</p>}
+          {profile.createdAt && (
+            <p className="text-sm text-muted-foreground">Member since: {new Date(profile.createdAt).toLocaleDateString()}</p>
+          )}
           <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
-            <span>Contribution Badges: <strong>{profile.badges ?? 0}</strong></span>
+            <span>Contribution Badges: <strong>{Array.isArray(profile.badges) ? profile.badges.length : profile.badges ?? 0}</strong></span>
             <span>Reputation Score: <strong>{profile.reputationScore ?? 0}</strong></span>
           </div>
         </div>
-        <Button variant="secondary" onClick={logout}>Logout</Button>
+        <div className="flex flex-col gap-2">
+          <Button variant="secondary" onClick={logout}>Logout</Button>
+        </div>
       </section>
+      {profile.bio && (
+        <section className="mb-6 rounded-xl border bg-card p-6">
+          <h2 className="text-xl font-semibold">About</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{profile.bio}</p>
+        </section>
+      )}
       <Tabs defaultValue="myposts">
         <TabsList>
           <TabsTrigger value="myposts">My Posts</TabsTrigger>
