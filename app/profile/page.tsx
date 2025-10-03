@@ -22,6 +22,7 @@ function ProfileContent() {
   const { user, logout } = useAuth()
   const [profile, setProfile] = useState<any>(null)
   const [posts, setPosts] = useState<any[]>([])
+  const [activities, setActivities] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -50,12 +51,23 @@ function ProfileContent() {
         }
 
         // Fetch posts (best-effort)
-  const postsRes = await fetch(`/api/posts?userId=${user.id}`);
+        const postsRes = await fetch(`/api/posts?userId=${user.id}`);
         if (postsRes.ok) {
           const postsData = await postsRes.json();
           setPosts(postsData.posts || postsData || []);
         } else {
           setPosts([]);
+        }
+
+        // Fetch activity history
+        try {
+          const actRes = await fetch(`/api/activities?userId=${user.id}`)
+          if (actRes.ok) {
+            const actData = await actRes.json()
+            setActivities(actData.activities || [])
+          }
+        } catch (e) {
+          setActivities([])
         }
       } catch (err) {
         console.error("Profile fetch error:", err);
@@ -164,8 +176,24 @@ function ProfileContent() {
           )}
         </TabsContent>
         <TabsContent value="activity" className="pt-4">
-          {/* Optionally, fetch and show activity history */}
-          <div className="rounded-lg border bg-card p-6 text-muted-foreground">No recent activity.</div>
+          {activities.length === 0 ? (
+            <div className="rounded-lg border bg-card p-6 text-muted-foreground">No recent activity.</div>
+          ) : (
+            <div className="space-y-4">
+              {activities.map((a) => (
+                <div key={a._id} className="rounded-lg border bg-card p-4">
+                  <div className="text-sm">
+                    {a.type === "joined_group" && (
+                      <div>
+                        Joined group <strong>{a.groupName}</strong>
+                        <div className="text-xs text-muted-foreground">{new Date(a.createdAt).toLocaleString()}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </main>

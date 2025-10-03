@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { useAuth } from "@/components/auth-guard"
 import { Users, Plus, Search } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 interface StudyGroup {
   _id: string
@@ -20,11 +21,13 @@ interface StudyGroup {
   maxMembers: number
   createdAt: string
   status: string
+  pendingRequests?: string[]
 }
 
 export default function StudyGroupsPage() {
   const { user } = useAuth()
   const [groups, setGroups] = useState<StudyGroup[]>([])
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -161,11 +164,29 @@ export default function StudyGroupsPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
-                      <CardTitle className="text-lg">{group.name}</CardTitle>
+                      <CardTitle className="text-lg">
+                        <Link href={`/study-groups/${group._id}`} className="hover:underline">{group.name}</Link>
+                      </CardTitle>
                       <div className="flex gap-2">
                         <Badge variant="secondary">{group.category}</Badge>
                         {group.subject && <Badge variant="outline">{group.subject}</Badge>}
                       </div>
+                    </div>
+                    <div>
+                      {user && user.id === group.creatorId && group.pendingRequests && group.pendingRequests.length > 0 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            router.push(`/study-groups/${group._id}`)
+                          }}
+                          className="inline-block"
+                          aria-label={`View ${group.pendingRequests.length} pending requests`}
+                        >
+                          <Badge variant="destructive" className="cursor-pointer">
+                            {group.pendingRequests.length} pending
+                          </Badge>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
