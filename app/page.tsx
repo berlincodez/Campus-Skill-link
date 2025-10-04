@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import dynamic from "next/dynamic";
 import { AuthGuard } from "@/components/auth-guard";
 
+const ClientOnlyReputation = dynamic(() => import("./reputation-client"), {
+  ssr: false,
+});
+
 const FeedClient = dynamic(() => import("./feed-client"), { ssr: false });
 
 export default function HomePage() {
@@ -26,7 +30,9 @@ export default function HomePage() {
             <span className="text-muted-foreground text-sm mb-2">
               Reputation Score
             </span>
-            <span className="text-4xl font-bold text-primary">92</span>
+            <span className="text-4xl font-bold text-primary">
+              <ClientOnlyReputation />
+            </span>
           </div>
           <div className="rounded-lg border bg-card p-6">
             <h2 className="font-semibold text-base mb-4">Quick Links</h2>

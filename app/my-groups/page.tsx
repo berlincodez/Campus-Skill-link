@@ -1,30 +1,31 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/components/auth-guard"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/components/auth-guard";
 
 export default function MyGroupsPage() {
-  const { user } = useAuth()
-  const [groups, setGroups] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth();
+  const [groups, setGroups] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return
+    const uid = user?.id;
+    if (!uid) return;
     async function fetchGroups() {
-      setLoading(true)
+      setLoading(true);
       try {
-        const res = await fetch(`/api/study-groups?userId=${user.id}`)
-        const data = await res.json()
-        setGroups(data.groups || [])
+        const res = await fetch(`/api/study-groups?userId=${uid}`);
+        const data = await res.json();
+        setGroups(data.groups || []);
       } catch {
-        setGroups([])
+        setGroups([]);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    fetchGroups()
-  }, [user])
+    fetchGroups();
+  }, [user]);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -32,7 +33,11 @@ export default function MyGroupsPage() {
       {loading ? (
         <p className="text-muted-foreground">Loading...</p>
       ) : groups.length === 0 ? (
-        <Card><CardContent className="py-10 text-muted-foreground">No groups found.</CardContent></Card>
+        <Card>
+          <CardContent className="py-10 text-muted-foreground">
+            No groups found.
+          </CardContent>
+        </Card>
       ) : (
         <div className="space-y-4">
           {groups.map((group) => (
@@ -49,5 +54,5 @@ export default function MyGroupsPage() {
         </div>
       )}
     </main>
-  )
+  );
 }

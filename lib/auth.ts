@@ -118,8 +118,33 @@ export async function getUserById(userId: string): Promise<User | null> {
     const user = await users.findOne({ _id: new ObjectId(userId) });
     if (!user) return null;
 
-    const { password: _, ...userWithoutPassword } = user;
-    return { ...userWithoutPassword, id: user._id.toString() } as User;
+    const {
+      password: _,
+      email,
+      universityEmailVerified,
+      name,
+      status,
+      major,
+      department,
+      bio,
+      reputationScore,
+      badges,
+      createdAt,
+    } = user as any;
+    const formatted: User = {
+      id: user._id.toString(),
+      email,
+      universityEmailVerified: universityEmailVerified || false,
+      name,
+      status,
+      major: major || "",
+      department: department || "",
+      bio: bio || "",
+      reputationScore: reputationScore || 0,
+      badges: badges || [],
+      createdAt: createdAt || new Date().toISOString(),
+    };
+    return formatted;
   } catch (error) {
     console.error("[v0] Error fetching user:", error);
     return null;

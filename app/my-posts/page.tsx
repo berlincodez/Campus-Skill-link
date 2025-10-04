@@ -11,11 +11,12 @@ export default function MyPostsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user?.id) return;
+    const uid = user?.id;
+    if (!uid) return;
     async function fetchPosts() {
       setLoading(true);
       try {
-        const res = await fetch(`/api/posts?userId=${user.id}`);
+        const res = await fetch(`/api/posts?userId=${uid}`);
         const posts = await res.json();
         setPosts(posts || []);
       } catch {

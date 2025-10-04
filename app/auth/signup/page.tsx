@@ -29,6 +29,7 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     name: "",
     status: "",
     major: "",
@@ -42,6 +43,13 @@ export default function SignupPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    // basic client-side password confirmation check
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
 
     try {
       console.log("Attempting signup with:", { ...formData, password: "***" });
@@ -128,7 +136,6 @@ export default function SignupPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@university.edu"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
@@ -149,6 +156,18 @@ export default function SignupPage() {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={(e) =>
+                  setFormData({ ...formData, confirmPassword: e.target.value })
+                }
+                required
+              />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="status">Student Status</Label>
@@ -163,10 +182,10 @@ export default function SignupPage() {
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="freshman">Freshman</SelectItem>
-                    <SelectItem value="sophomore">Sophomore</SelectItem>
-                    <SelectItem value="junior">Junior</SelectItem>
-                    <SelectItem value="senior">Senior</SelectItem>
+                    <SelectItem value="first-year">First year</SelectItem>
+                    <SelectItem value="second-year">Second year</SelectItem>
+                    <SelectItem value="third-year">Third year</SelectItem>
+                    <SelectItem value="fourth-year">Fourth year</SelectItem>
                     <SelectItem value="grad">Graduate</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
                   </SelectContent>

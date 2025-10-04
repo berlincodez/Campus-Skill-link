@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // For each connection, get the last message and other user info
+    // For each connection, get the last message, unread count and other user info
     const conversations = await Promise.all(
       userConnections.map(async (conn) => {
         // If this connection is a group chat, fetch the study group metadata
@@ -68,6 +68,14 @@ export async function GET(request: NextRequest) {
             .toArray();
           const lastMessage = lastMessageArr[0];
 
+          // unread count: messages where recipient is the user and read is false
+          const unreadCount = await messages.countDocuments({
+            connectionId: conn._id.toString(),
+            read: false,
+            // sender is not the current user
+            senderId: { $ne: userId },
+          });
+
           return {
             connectionId: conn._id.toString(),
             otherUser: null,
@@ -78,6 +86,7 @@ export async function GET(request: NextRequest) {
                   senderId: lastMessage.senderId,
                 }
               : null,
+            unreadCount,
             post: null,
             group: group
               ? {
@@ -107,6 +116,12 @@ export async function GET(request: NextRequest) {
           .toArray();
         const lastMessage = lastMessageArr[0];
 
+        const unreadCount = await messages.countDocuments({
+          connectionId: conn._id.toString(),
+          read: false,
+          senderId: { $ne: userId },
+        });
+
         // Get post details (try ObjectId then fallback)
         let post = null;
         try {
@@ -131,6 +146,7 @@ export async function GET(request: NextRequest) {
                 senderId: lastMessage.senderId,
               }
             : null,
+          unreadCount,
           post: post
             ? {
                 id: post._id.toString(),
@@ -141,6 +157,17 @@ export async function GET(request: NextRequest) {
         };
       })
     );
+
+    // sort conversations by lastMessage.createdAt desc (nulls go last)
+    conversations.sort((a, b) => {
+      const ta = a.lastMessage
+        ? new Date(a.lastMessage.createdAt).getTime()
+        : 0;
+      const tb = b.lastMessage
+        ? new Date(b.lastMessage.createdAt).getTime()
+        : 0;
+      return tb - ta;
+    });
 
     return NextResponse.json({ conversations });
   } catch (error) {

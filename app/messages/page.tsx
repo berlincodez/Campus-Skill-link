@@ -40,6 +40,7 @@ interface Conversation {
     id: string;
     name: string;
   } | null;
+  unreadCount?: number;
 }
 
 export default function MessagesPage() {
@@ -55,67 +56,98 @@ export default function MessagesPage() {
   const [sending, setSending] = useState(false);
 
   // Fetch conversations
-  useEffect(() => {
-    if (!user) return;
+  // Centralized loader for conversations so we can call it from multiple places
+  async function loadConversations(markFirstRead = false) {
+    const uid = user?.id;
+    if (!uid) return;
 
-    async function fetchConversations() {
-      try {
-        const res = await fetch(`/api/conversations?userId=${user.id}`);
-        if (!res.ok) {
-          console.error("[v0] Failed to fetch conversations", res.status);
-          setLoading(false);
-          return;
-        }
+    try {
+      const res = await fetch(`/api/conversations?userId=${uid}`);
+      if (!res.ok) {
+        console.error("[v0] Failed to fetch conversations", res.status);
+        setLoading(false);
+        return;
+      }
 
-        const data = await res.json();
-        // conversations may include group chats; attempt to enrich with group info when needed
-        const enriched = await Promise.all(
-          data.conversations.map(async (c: any) => {
-            if (!c.otherUser && c.group == null) {
-              // try to fetch study group by group id if available on c.post.id
-              if (c.post && c.post.id) {
-                try {
-                  const g = await fetch(`/api/study-groups/${c.post.id}`);
-                  if (g.ok) {
-                    const gd = await g.json();
-                    return {
-                      ...c,
-                      group: {
-                        id: gd.group._id || gd.group.id,
-                        name: gd.group.name,
-                      },
-                    };
-                  }
-                } catch (e) {
-                  // ignore
+      const data = await res.json();
+      // Enrich group info when needed
+      const enriched = await Promise.all(
+        data.conversations.map(async (c: any) => {
+          if (!c.otherUser && c.group == null) {
+            if (c.post && c.post.id) {
+              try {
+                const g = await fetch(`/api/study-groups/${c.post.id}`);
+                if (g.ok) {
+                  const gd = await g.json();
+                  return {
+                    ...c,
+                    group: {
+                      id: gd.group._id || gd.group.id,
+                      name: gd.group.name,
+                    },
+                  };
                 }
+              } catch (e) {
+                // ignore
               }
             }
-            return c;
-          })
-        );
+          }
+          return c;
+        })
+      );
 
-        setConversations(enriched as Conversation[]);
-        if (!activeConversation && enriched.length > 0) {
-          setActiveConversation(enriched[0].connectionId);
+      // Client-side sort by last message timestamp descending
+      enriched.sort((a: Conversation, b: Conversation) => {
+        const ta = a.lastMessage
+          ? new Date(a.lastMessage.createdAt).getTime()
+          : 0;
+        const tb = b.lastMessage
+          ? new Date(b.lastMessage.createdAt).getTime()
+          : 0;
+        return tb - ta;
+      });
+
+      setConversations(enriched as Conversation[]);
+
+      if (!activeConversation && enriched.length > 0) {
+        const firstId = enriched[0].connectionId;
+        setActiveConversation(firstId);
+        if (markFirstRead) {
+          try {
+            fetch("/api/messages", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ connectionId: firstId, userId: uid }),
+            });
+          } catch (e) {
+            // ignore
+          }
         }
-      } catch (error) {
-        console.error("[v0] Error fetching conversations:", error);
-      } finally {
-        setLoading(false);
       }
+    } catch (error) {
+      console.error("[v0] Error fetching conversations:", error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    fetchConversations();
+  // initial load and periodic refresh of conversations
+  useEffect(() => {
+    const uid = user?.id;
+    if (!uid) return;
+    loadConversations(true);
+    const interval = setInterval(() => loadConversations(false), 5000);
+    return () => clearInterval(interval);
   }, [user]);
   // Fetch messages for active conversation
   useEffect(() => {
-    if (!user || !user.id || !activeConversation) return;
+    const uid = user?.id;
+    if (!uid || !activeConversation) return;
 
     async function fetchMessages() {
       try {
         const res = await fetch(
-          `/api/messages?connectionId=${activeConversation}&userId=${user.id}`
+          `/api/messages?connectionId=${activeConversation}&userId=${uid}`
         );
         if (res.ok) {
           const data = await res.json();
@@ -191,7 +223,34 @@ export default function MessagesPage() {
           {conversations.map((conv) => (
             <button
               key={conv.connectionId}
-              onClick={() => setActiveConversation(conv.connectionId)}
+              onClick={async () => {
+                setActiveConversation(conv.connectionId);
+                // mark messages as read for this conversation (if we have a user id)
+                const uid = user?.id;
+                if (!uid) return;
+                try {
+                  const res = await fetch("/api/messages", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      connectionId: conv.connectionId,
+                      userId: uid,
+                    }),
+                  });
+                  if (res.ok) {
+                    // update local conversations state to clear unreadCount
+                    setConversations((prev) =>
+                      prev.map((c) =>
+                        c.connectionId === conv.connectionId
+                          ? { ...c, unreadCount: 0 }
+                          : c
+                      )
+                    );
+                  }
+                } catch (e) {
+                  // ignore
+                }
+              }}
               className={`flex w-full items-start gap-3 rounded-lg p-3 text-left transition-colors hover:bg-muted ${
                 activeConversation === conv.connectionId ? "bg-muted" : ""
               }`}
@@ -232,6 +291,13 @@ export default function MessagesPage() {
                 {conv.lastMessage && (
                   <div className="truncate text-xs text-muted-foreground">
                     {conv.lastMessage.text}
+                  </div>
+                )}
+                {(conv.unreadCount ?? 0) > 0 && (
+                  <div className="ml-auto flex items-center">
+                    <span className="inline-flex h-6 min-w-[1.25rem] items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground px-2">
+                      {conv.unreadCount}
+                    </span>
                   </div>
                 )}
               </div>

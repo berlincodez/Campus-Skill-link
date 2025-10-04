@@ -38,7 +38,13 @@ export interface User {
   email: string;
   universityEmailVerified: boolean;
   name: string;
-  status: "freshman" | "sophomore" | "junior" | "senior" | "grad" | "other";
+  status:
+    | "first-year"
+    | "second-year"
+    | "third-year"
+    | "fourth-year"
+    | "grad"
+    | "other";
   major: string;
   department: string;
   bio?: string;
