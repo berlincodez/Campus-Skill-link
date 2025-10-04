@@ -39,9 +39,9 @@ export async function createUser(userData: {
       return { success: false, error: "Email already registered" };
     }
 
-    // Verify university email (basic check - ends with .edu)
-    if (!userData.email.endsWith(".edu")) {
-      return { success: false, error: "Must use university email (.edu)" };
+    // Verify university email (basic check - ends with .edu.in)
+    if (!userData.email.endsWith(".edu.in")) {
+      return { success: false, error: "Must use university email (.edu.in)" };
     }
 
     const user = {
