@@ -48,14 +48,14 @@ export function PostCard({ post }: { post: Post }) {
 
   return (
     <Card
-      className={
-        isOwner ? "border-2 border-primary/20 bg-primary/5" : undefined
-      }
+      className={`overflow-hidden ${
+        isOwner ? "border-2 border-primary/20 bg-primary/5" : ""
+      }`}
     >
       <CardHeader>
-        <div className="flex items-start justify-between">
-          <CardTitle className="text-base">
-            <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <CardTitle className="min-w-0 flex-1 text-base">
+            <div className="flex flex-wrap items-center gap-2">
               <Badge
                 variant="secondary"
                 className="mb-2 capitalize"
@@ -70,26 +70,24 @@ export function PostCard({ post }: { post: Post }) {
               </div>
             )}
           </CardTitle>
-          {isOwner && (
-            <div className="ml-2">
+          <div className="flex flex-shrink-0 flex-wrap gap-1">
+            {isOwner && (
               <Badge
                 variant="owner"
-                className="text-xs"
+                className="text-xs whitespace-nowrap"
               >
                 Your post
               </Badge>
-            </div>
-          )}
-          {(post.status === "accepted" || (post as any).acceptedBy) && (
-            <div className="ml-2">
+            )}
+            {(post.status === "accepted" || (post as any).acceptedBy) && (
               <Badge
                 variant="info"
-                className="text-xs"
+                className="text-xs whitespace-nowrap"
               >
                 Accepted
               </Badge>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
