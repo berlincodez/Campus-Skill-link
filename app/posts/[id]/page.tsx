@@ -191,7 +191,7 @@ export default function PostDetailPage() {
         Back to Feed
       </Link>
 
-      <Card className="mt-4">
+      <Card className="mt-4 bg-card">
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="space-y-2">
@@ -204,30 +204,30 @@ export default function PostDetailPage() {
                 </Badge>
                 {isAccepted && <Badge variant="outline">Accepted</Badge>}
               </div>
-              <CardTitle className="text-2xl">{post.title}</CardTitle>
+              <CardTitle className="text-3xl font-bold text-[#3D1A5C]">{post.title}</CardTitle>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
-            <h3 className="mb-2 text-sm font-medium">Description</h3>
-            <p className="text-muted-foreground">{post.description}</p>
+            <h3 className="mb-2 text-lg font-bold text-[#3D1A5C]">Description</h3>
+            <p className="text-base text-[#4A2066]">{post.description}</p>
           </div>
 
-          <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex flex-wrap gap-6 text-base">
             <div>
-              <span className="font-medium">Category:</span>{" "}
-              <span className="text-muted-foreground">{post.category}</span>
+              <span className="font-bold text-[#3D1A5C]">Category:</span>{" "}
+              <span className="text-[#4A2066]">{post.category}</span>
             </div>
             <div>
-              <span className="font-medium">Department:</span>{" "}
-              <span className="text-muted-foreground">{post.department}</span>
+              <span className="font-bold text-[#3D1A5C]">Department:</span>{" "}
+              <span className="text-[#4A2066]">{post.department}</span>
             </div>
           </div>
 
           {postOwner && (
-            <div className="border-t pt-6">
-              <h3 className="mb-3 text-sm font-medium">Posted by</h3>
+            <div className="border-t border-border pt-6">
+              <h3 className="mb-3 text-lg font-bold text-[#3D1A5C]">Posted by</h3>
               <Link
                 href={`/profile?id=${postOwner._id}`}
                 className="flex items-center gap-3 hover:underline"
@@ -238,12 +238,12 @@ export default function PostDetailPage() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{postOwner.name}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-lg font-bold text-[#3D1A5C]">{postOwner.name}</p>
+                  <p className="text-base text-[#4A2066]">
                     {postOwner.status} • {postOwner.major}
                   </p>
                   {postOwner.reputationScore > 0 && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-[#5A3080]">
                       Reputation: {postOwner.reputationScore}
                     </p>
                   )}
@@ -288,15 +288,14 @@ export default function PostDetailPage() {
 
           {isOwner && (
             <div className="border-t pt-6">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-card-foreground/80">
                 This is your post. You'll be notified when someone accepts it.
               </p>
               <div className="mt-4">
                 <Button
-                  variant="destructive"
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="w-full"
+                  className="w-full bg-red-600 hover:bg-red-700 text-white"
                 >
                   {deleting ? "Deleting..." : "Delete Post"}
                 </Button>

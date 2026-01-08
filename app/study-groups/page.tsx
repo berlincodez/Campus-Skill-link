@@ -108,8 +108,8 @@ export default function StudyGroupsPage() {
     <main className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-6 flex items-end justify-between">
         <div>
-          <h1 className="text-balance text-3xl font-semibold">Study Groups</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Join or create study groups to collaborate with peers</p>
+          <h1 className="text-balance text-3xl font-bold">Study Groups</h1>
+          <p className="mt-1 text-base text-muted-foreground">Join or create study groups to collaborate with peers</p>
         </div>
         <Link href="/study-groups/create">
           <Button>
@@ -164,7 +164,7 @@ export default function StudyGroupsPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
-                      <CardTitle className="text-lg">
+                      <CardTitle className="text-lg font-bold text-[#3D1A5C]">
                         <Link href={`/study-groups/${group._id}`} className="hover:underline">{group.name}</Link>
                       </CardTitle>
                       <div className="flex gap-2">
@@ -191,10 +191,10 @@ export default function StudyGroupsPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">{group.description}</p>
+                  <p className="text-base text-[#4A2066]">{group.description}</p>
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-[#5A3080]">
                       <Users className="h-4 w-4" />
                       <span>
                         {group.members.length} / {group.maxMembers} members

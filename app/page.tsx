@@ -16,7 +16,7 @@ export default function HomePage() {
       <main className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 px-4 py-8">
         <section>
           <div className="mb-6 flex items-end justify-between">
-            <h1 className="text-balance text-3xl font-semibold">
+            <h1 className="text-balance text-4xl font-semibold">
               Skill Exchange Feed
             </h1>
             <Link href="/create-post">
@@ -27,19 +27,19 @@ export default function HomePage() {
         </section>
         <aside className="space-y-6">
           <div className="rounded-lg border bg-card p-6 flex flex-col items-center">
-            <span className="text-muted-foreground text-sm mb-2">
+            <span className="text-[#3D1A5C] font-bold text-lg mb-2">
               Reputation Score
             </span>
-            <span className="text-4xl font-bold text-primary">
+            <span className="text-4xl font-bold text-[#3D1A5C]">
               <ClientOnlyReputation />
             </span>
           </div>
           <div className="rounded-lg border bg-card p-6">
-            <h2 className="font-semibold text-base mb-4">Quick Links</h2>
+            <h2 className="font-bold text-xl mb-4 text-[#3D1A5C]">Quick Links</h2>
             <div className="flex flex-col gap-3">
               <Link
                 href="/my-posts"
-                className="flex items-center gap-2 text-primary font-medium hover:underline"
+                className="flex items-center gap-2 text-[#4A2066] font-semibold text-base hover:underline"
               >
                 <svg
                   width="20"
@@ -62,7 +62,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/my-groups"
-                className="flex items-center gap-2 text-primary font-medium hover:underline"
+                className="flex items-center gap-2 text-[#4A2066] font-semibold text-base hover:underline"
               >
                 <svg
                   width="20"

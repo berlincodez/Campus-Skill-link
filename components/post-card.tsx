@@ -47,14 +47,10 @@ export function PostCard({ post }: { post: Post }) {
   }, [user, immediateUserId, post]);
 
   return (
-    <Card
-      className={`overflow-hidden ${
-        isOwner ? "border-2 border-primary/20 bg-primary/5" : ""
-      }`}
-    >
+    <Card className="overflow-hidden bg-background border-border">
       <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-2">
-          <CardTitle className="min-w-0 flex-1 text-base">
+          <CardTitle className="min-w-0 flex-1 text-lg">
             <div className="flex flex-wrap items-center gap-2">
               <Badge
                 variant="secondary"
@@ -62,10 +58,10 @@ export function PostCard({ post }: { post: Post }) {
               >
                 {post.type}
               </Badge>
-              <div className="mt-1 font-semibold">{post.title}</div>
+              <div className="mt-1 text-lg font-semibold text-foreground">{post.title}</div>
             </div>
             {post.author && (
-              <div className="mt-1 text-sm text-muted-foreground">
+              <div className="mt-1 text-base text-muted-foreground">
                 {isOwner ? "Posted by You" : `Posted by ${post.author.name}`}
               </div>
             )}
@@ -91,12 +87,12 @@ export function PostCard({ post }: { post: Post }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="line-clamp-2 text-sm text-muted-foreground">
+        <p className="line-clamp-2 text-base text-foreground/90">
           {post.description}
         </p>
-        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-          <span className="rounded-full border px-2 py-1">{post.category}</span>
-          <span className="rounded-full border px-2 py-1">
+        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+          <span className="rounded-full border border-border px-2 py-1">{post.category}</span>
+          <span className="rounded-full border border-border px-2 py-1">
             {post.department}
           </span>
         </div>

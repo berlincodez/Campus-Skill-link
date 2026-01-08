@@ -94,10 +94,10 @@ export default function CreatePostPage() {
         type="button"
         onClick={() => setType(value)}
         className={cn(
-          "rounded-full border px-4 py-1 text-sm",
+          "rounded-full border px-4 py-2 text-base font-medium",
           active
-            ? "border-primary text-primary"
-            : "text-muted-foreground hover:text-foreground"
+            ? "border-primary bg-primary/10 text-primary"
+            : "border-[#5A3080] text-[#4A2066] hover:bg-[#5A3080]/10"
         )}
       >
         {label}
@@ -107,11 +107,11 @@ export default function CreatePostPage() {
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-4 text-3xl font-semibold">Create a Post</h1>
+      <h1 className="mb-4 text-3xl font-bold text-foreground">Create a Post</h1>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Post Type</CardTitle>
+          <CardTitle className="text-lg font-bold text-[#3D1A5C]">Post Type</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex gap-2">
@@ -134,7 +134,7 @@ export default function CreatePostPage() {
             className="space-y-4"
           >
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title" className="text-base font-bold text-[#3D1A5C]">Title</Label>
               <Input
                 id="title"
                 placeholder="e.g., Tutoring in Math"
@@ -143,14 +143,15 @@ export default function CreatePostPage() {
                   setForm((f) => ({ ...f, title: e.target.value }))
                 }
                 required
+                className="placeholder:text-[#5A3080] text-[#3D1A5C]"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-[#5A3080]">
                 A clear and concise title will attract more attention.
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-base font-bold text-[#3D1A5C]">Description</Label>
               <Textarea
                 id="description"
                 placeholder="Provide more details about your offer, need, or mentorship."
@@ -159,15 +160,16 @@ export default function CreatePostPage() {
                   setForm((f) => ({ ...f, description: e.target.value }))
                 }
                 required
+                className="placeholder:text-[#5A3080] text-[#3D1A5C]"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-[#5A3080]">
                 Be specific! The more details you provide, the better.
               </p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>
+                <Label className="text-base font-bold text-[#3D1A5C]">
                   Category <span className="text-red-500">*</span>
                 </Label>
                 <Select
@@ -191,7 +193,7 @@ export default function CreatePostPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>
+                <Label className="text-base font-bold text-[#3D1A5C]">
                   Department <span className="text-red-500">*</span>
                 </Label>
                 <Select
@@ -218,7 +220,7 @@ export default function CreatePostPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location" className="text-base font-bold text-[#3D1A5C]">Location</Label>
               <Input
                 id="location"
                 placeholder="Campus library, online, etc."
@@ -226,6 +228,7 @@ export default function CreatePostPage() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, location: e.target.value }))
                 }
+                className="placeholder:text-[#5A3080] text-[#3D1A5C]"
               />
             </div>
 

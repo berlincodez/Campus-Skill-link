@@ -74,7 +74,7 @@ export function Navbar() {
       <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="font-medium">Campus Skill Link</span>
+            <span className="font-medium text-lg">Campus Skill Link</span>
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" asChild>
@@ -93,10 +93,10 @@ export function Navbar() {
     <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <span className="font-semibold">Campus SkillLink</span>
+          <span className="font-semibold text-lg">Campus SkillLink</span>
         </div>
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm">
+        <nav className="hidden md:flex items-center gap-6 text-base">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -110,7 +110,7 @@ export function Navbar() {
               <span className="inline-flex items-center gap-2">
                 {link.label}
                 {link.href === "/messages" && totalUnread > 0 && (
-                  <span className="inline-flex h-5 items-center justify-center rounded-full bg-amber-100 px-2 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200">
+                  <span className="inline-flex h-5 items-center justify-center rounded-full bg-accent px-2 text-[11px] font-medium text-accent-foreground ring-1 ring-accent/50">
                     {totalUnread}
                   </span>
                 )}

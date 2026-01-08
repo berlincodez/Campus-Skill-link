@@ -83,7 +83,7 @@ function ProfileContent() {
   }, [user]);
 
   if (loading) {
-    return <div className="mx-auto max-w-5xl px-4 py-8 text-muted-foreground">Loading profile...</div>
+    return <div className="mx-auto max-w-5xl px-4 py-8 text-foreground">Loading profile...</div>
   }
 
   if (!profile) {
@@ -96,19 +96,19 @@ function ProfileContent() {
       <section className="mb-6 flex items-center gap-6 rounded-xl border bg-card p-6">
         <Image src="/placeholder-user.jpg" alt="User" width={96} height={96} className="rounded-full" />
         <div className="flex-1">
-          <h1 className="text-3xl font-semibold">{profile.name}</h1>
-          <p className="text-lg text-primary font-medium">{profile.major ?? "-"}, {profile.department ?? "-"}</p>
-          <p className="text-sm text-muted-foreground">{profile.email}</p>
+          <h1 className="text-3xl font-bold text-[#3D1A5C]">{profile.name}</h1>
+          <p className="text-lg text-[#4A2066] font-medium">{profile.major ?? "-"}, {profile.department ?? "-"}</p>
+          <p className="text-base text-[#4A2066]">{profile.email}</p>
           {profile.universityEmailVerified !== undefined && (
-            <p className="text-sm text-muted-foreground">University email verified: {profile.universityEmailVerified ? "Yes" : "No"}</p>
+            <p className="text-base text-[#5A3080]">University email verified: {profile.universityEmailVerified ? "Yes" : "No"}</p>
           )}
-          {profile.status && <p className="text-sm text-muted-foreground">Status: {profile.status}</p>}
+          {profile.status && <p className="text-base text-[#5A3080]">Status: {profile.status}</p>}
           {profile.createdAt && (
-            <p className="text-sm text-muted-foreground">Member since: {new Date(profile.createdAt).toLocaleDateString()}</p>
+            <p className="text-base text-[#5A3080]">Member since: {new Date(profile.createdAt).toLocaleDateString()}</p>
           )}
-          <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
-            <span>Contribution Badges: <strong>{Array.isArray(profile.badges) ? profile.badges.length : profile.badges ?? 0}</strong></span>
-            <span>Reputation Score: <strong>{profile.reputationScore ?? 0}</strong></span>
+          <div className="flex gap-4 mt-2 text-base text-[#4A2066]">
+            <span>Contribution Badges: <strong className="text-[#3D1A5C]">{Array.isArray(profile.badges) ? profile.badges.length : profile.badges ?? 0}</strong></span>
+            <span>Reputation Score: <strong className="text-[#3D1A5C]">{profile.reputationScore ?? 0}</strong></span>
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -117,8 +117,8 @@ function ProfileContent() {
       </section>
       {profile.bio && (
         <section className="mb-6 rounded-xl border bg-card p-6">
-          <h2 className="text-xl font-semibold">About</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{profile.bio}</p>
+          <h2 className="text-xl font-bold text-[#3D1A5C]">About</h2>
+          <p className="mt-2 text-base text-[#4A2066]">{profile.bio}</p>
         </section>
       )}
       <Tabs defaultValue="myposts">
@@ -130,13 +130,13 @@ function ProfileContent() {
         </TabsList>
         <TabsContent value="myposts" className="grid gap-4 pt-4">
           {posts.length === 0 ? (
-            <div className="rounded-lg border bg-card p-6 text-muted-foreground">No posts found.</div>
+            <div className="rounded-lg border bg-card p-6 text-[#5A3080]">No posts found.</div>
           ) : (
             posts.map((post) => (
               <div key={post._id} className="flex items-center gap-4 rounded-lg border bg-card p-4">
                 <div className="flex-1">
-                  <div className="font-semibold text-base mb-1">{post.title}</div>
-                  <div className="text-sm text-muted-foreground mb-2">{post.description}</div>
+                  <div className="font-bold text-lg mb-1 text-[#3D1A5C]">{post.title}</div>
+                  <div className="text-base text-[#4A2066] mb-2">{post.description}</div>
                   <Button size="sm" variant="secondary" onClick={() => window.location.href = `/posts/${post._id}`}>View Details</Button>
                 </div>
               </div>
@@ -146,13 +146,13 @@ function ProfileContent() {
         <TabsContent value="offered" className="grid gap-4 pt-4">
           {/* Optionally, filter posts by type: offer */}
           {posts.filter((p) => p.type === "offer").length === 0 ? (
-            <div className="rounded-lg border bg-card p-6 text-muted-foreground">No skills offered.</div>
+            <div className="rounded-lg border bg-card p-6 text-[#5A3080]">No skills offered.</div>
           ) : (
             posts.filter((p) => p.type === "offer").map((post) => (
               <div key={post._id} className="flex items-center gap-4 rounded-lg border bg-card p-4">
                 <div className="flex-1">
-                  <div className="font-semibold text-base mb-1">{post.title}</div>
-                  <div className="text-sm text-muted-foreground mb-2">{post.description}</div>
+                  <div className="font-bold text-lg mb-1 text-[#3D1A5C]">{post.title}</div>
+                  <div className="text-base text-[#4A2066] mb-2">{post.description}</div>
                   <Button size="sm" variant="secondary" onClick={() => window.location.href = `/posts/${post._id}`}>View Details</Button>
                 </div>
               </div>
@@ -162,13 +162,13 @@ function ProfileContent() {
         <TabsContent value="needed" className="grid gap-4 pt-4">
           {/* Optionally, filter posts by type: need */}
           {posts.filter((p) => p.type === "need").length === 0 ? (
-            <div className="rounded-lg border bg-card p-6 text-muted-foreground">No skills needed.</div>
+            <div className="rounded-lg border bg-card p-6 text-[#5A3080]">No skills needed.</div>
           ) : (
             posts.filter((p) => p.type === "need").map((post) => (
               <div key={post._id} className="flex items-center gap-4 rounded-lg border bg-card p-4">
                 <div className="flex-1">
-                  <div className="font-semibold text-base mb-1">{post.title}</div>
-                  <div className="text-sm text-muted-foreground mb-2">{post.description}</div>
+                  <div className="font-bold text-lg mb-1 text-[#3D1A5C]">{post.title}</div>
+                  <div className="text-base text-[#4A2066] mb-2">{post.description}</div>
                   <Button size="sm" variant="secondary" onClick={() => window.location.href = `/posts/${post._id}`}>View Details</Button>
                 </div>
               </div>
@@ -177,16 +177,16 @@ function ProfileContent() {
         </TabsContent>
         <TabsContent value="activity" className="pt-4">
           {activities.length === 0 ? (
-            <div className="rounded-lg border bg-card p-6 text-muted-foreground">No recent activity.</div>
+            <div className="rounded-lg border bg-card p-6 text-[#5A3080]">No recent activity.</div>
           ) : (
             <div className="space-y-4">
               {activities.map((a) => (
                 <div key={a._id} className="rounded-lg border bg-card p-4">
-                  <div className="text-sm">
+                  <div className="text-base text-[#4A2066]">
                     {a.type === "joined_group" && (
                       <div>
-                        Joined group <strong>{a.groupName}</strong>
-                        <div className="text-xs text-muted-foreground">{new Date(a.createdAt).toLocaleString()}</div>
+                        Joined group <strong className="text-[#3D1A5C]">{a.groupName}</strong>
+                        <div className="text-sm text-[#5A3080]">{new Date(a.createdAt).toLocaleString()}</div>
                       </div>
                     )}
                   </div>
