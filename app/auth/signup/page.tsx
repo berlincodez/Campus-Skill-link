@@ -90,8 +90,8 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <CardTitle>Join Campus SkillLink</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl font-bold text-[#3D1A5C]">Join Campus SkillLink</CardTitle>
+          <CardDescription className="text-base text-[#4A2066]">
             Create your account to start exchanging skills
           </CardDescription>
         </CardHeader>
@@ -99,7 +99,7 @@ export default function SignupPage() {
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name" className="text-base font-bold text-[#3D1A5C]">Full Name</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -107,10 +107,11 @@ export default function SignupPage() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   required
+                  className="text-[#3D1A5C]"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">University Email</Label>
+                <Label htmlFor="email" className="text-base font-bold text-[#3D1A5C]">University Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -119,11 +120,12 @@ export default function SignupPage() {
                     setFormData({ ...formData, email: e.target.value })
                   }
                   required
+                  className="text-[#3D1A5C]"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-base font-bold text-[#3D1A5C]">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -132,10 +134,11 @@ export default function SignupPage() {
                   setFormData({ ...formData, password: e.target.value })
                 }
                 required
+                className="text-[#3D1A5C]"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-base font-bold text-[#3D1A5C]">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -144,11 +147,12 @@ export default function SignupPage() {
                   setFormData({ ...formData, confirmPassword: e.target.value })
                 }
                 required
+                className="text-[#3D1A5C]"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="status">Student Status</Label>
+                <Label htmlFor="status" className="text-base font-bold text-[#3D1A5C]">Student Status</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) =>
@@ -170,7 +174,7 @@ export default function SignupPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="major">Major</Label>
+                <Label htmlFor="major" className="text-base font-bold text-[#3D1A5C]">Major</Label>
                 <Input
                   id="major"
                   value={formData.major}
@@ -178,11 +182,12 @@ export default function SignupPage() {
                     setFormData({ ...formData, major: e.target.value })
                   }
                   required
+                  className="text-[#3D1A5C]"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="department">Department</Label>
+              <Label htmlFor="department" className="text-base font-bold text-[#3D1A5C]">Department</Label>
               <Input
                 id="department"
                 value={formData.department}
@@ -190,10 +195,11 @@ export default function SignupPage() {
                   setFormData({ ...formData, department: e.target.value })
                 }
                 required
+                className="text-[#3D1A5C]"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bio">Bio (Optional)</Label>
+              <Label htmlFor="bio" className="text-base font-bold text-[#3D1A5C]">Bio (Optional)</Label>
               <Textarea
                 id="bio"
                 placeholder="Tell us about your skills and interests..."
@@ -202,6 +208,7 @@ export default function SignupPage() {
                   setFormData({ ...formData, bio: e.target.value })
                 }
                 rows={3}
+                className="placeholder:text-[#5A3080] text-[#3D1A5C]"
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
@@ -209,9 +216,9 @@ export default function SignupPage() {
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-4 text-center text-base text-[#4A2066]">
             Already have an account?{" "}
-            <Link href="/auth/login" className="text-primary hover:underline">
+            <Link href="/auth/login" className="text-[#3D1A5C] font-semibold hover:underline">
               Login
             </Link>
           </div>

@@ -61,13 +61,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Login to Campus SkillLink</CardDescription>
+          <CardTitle className="text-2xl font-bold text-[#3D1A5C]">Welcome Back</CardTitle>
+          <CardDescription className="text-base text-[#4A2066]">Login to Campus SkillLink</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">University Email</Label>
+              <Label htmlFor="email" className="text-base font-bold text-[#3D1A5C]">University Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -75,16 +75,18 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="placeholder:text-[#5A3080] text-[#3D1A5C]"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-base font-bold text-[#3D1A5C]">Password</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="text-[#3D1A5C]"
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
@@ -92,9 +94,9 @@ export default function LoginPage() {
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-4 text-center text-base text-[#4A2066]">
             Don't have an account?{" "}
-            <Link href="/auth/signup" className="text-primary hover:underline">
+            <Link href="/auth/signup" className="text-[#3D1A5C] font-semibold hover:underline">
               Sign up
             </Link>
           </div>
