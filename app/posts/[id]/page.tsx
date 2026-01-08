@@ -123,10 +123,7 @@ export default function PostDetailPage() {
     }
   };
 
-  const handleDecline = async () => {
-    alert("Decline functionality not yet implemented.");
-    // TODO: Implement decline logic (API and UI)
-  };
+
 
   const handleDelete = async () => {
     if (!isOwner || !post) return;
@@ -253,20 +250,13 @@ export default function PostDetailPage() {
           )}
 
           {!isOwner && !isAccepted && (
-            <div className="border-t pt-6 flex gap-4">
+            <div className="border-t pt-6">
               <Button
                 onClick={handleAccept}
                 disabled={accepting}
                 className="w-full"
               >
                 {accepting ? "Accepting..." : "Accept & Start Messaging"}
-              </Button>
-              <Button
-                onClick={handleDecline}
-                variant="outline"
-                className="w-full"
-              >
-                Decline
               </Button>
             </div>
           )}

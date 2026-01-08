@@ -176,7 +176,7 @@ export default function CreatePostPage() {
                   onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}
                   required
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-base text-[#3D1A5C] data-[placeholder]:text-[#3D1A5C]/70">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -202,7 +202,7 @@ export default function CreatePostPage() {
                   }
                   required
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="text-base text-[#3D1A5C] data-[placeholder]:text-[#3D1A5C]/70">
                     <SelectValue placeholder="Select a department" />
                   </SelectTrigger>
                   <SelectContent>
