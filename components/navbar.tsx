@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "./auth-provider";
@@ -33,8 +32,6 @@ export function Navbar() {
   const router = useRouter();
   const { user, logout, loading } = useAuth();
 
-  console.log("Navbar auth state:", { user: !!user, loading, pathname });
-
   const [totalUnread, setTotalUnread] = useState(0);
 
   useEffect(() => {
@@ -47,22 +44,19 @@ export function Navbar() {
         const data = await res.json();
         if (!mounted) return;
         const sum = (data.conversations || []).reduce(
-          (s: number, c: any) => s + (c.unreadCount || 0),
+          (s: number, c: { unreadCount?: number }) => s + (c.unreadCount || 0),
           0
         );
-        // If user is currently on the messages page, show 0 immediately (cleared)
-        // but still refresh the real total after fetching (helps keep UI consistent)
         if (pathname === "/messages") {
           setTotalUnread(0);
         } else {
           setTotalUnread(sum);
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }
 
-    // If we've navigated to /messages, immediately clear the badge for UX
     if (pathname === "/messages") {
       setTotalUnread(0);
     }
@@ -73,9 +67,8 @@ export function Navbar() {
       mounted = false;
       clearInterval(iv);
     };
-  }, [user]);
+  }, [user, pathname]);
 
-  // During initial load or when logged out, show minimal header
   if (loading || !user) {
     return (
       <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
@@ -84,10 +77,7 @@ export function Navbar() {
             <span className="font-medium">Campus Skill Link</span>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              asChild
-            >
+            <Button variant="ghost" asChild>
               <Link href="/auth/login">Sign In</Link>
             </Button>
             <Button asChild>
@@ -99,31 +89,10 @@ export function Navbar() {
     );
   }
 
-  if (!user) {
-    return (
-      <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">Campus SkillLink</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/auth/login">
-              <Button variant="ghost">Login</Button>
-            </Link>
-            <Link href="/auth/signup">
-              <Button>Sign Up</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-    );
-  }
-
   return (
     <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          {/* Logo */}
           <span className="font-semibold">Campus SkillLink</span>
         </div>
         {/* Desktop nav */}
@@ -150,10 +119,7 @@ export function Navbar() {
           ))}
           <DropdownMenu>
             <div className="flex items-center gap-3">
-              <Link
-                href="/profile"
-                className="flex items-center gap-2"
-              >
+              <Link href="/profile" className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback>
                     {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
@@ -165,11 +131,7 @@ export function Navbar() {
               </Link>
 
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Open user menu"
-                >
+                <Button variant="ghost" size="icon" aria-label="Open user menu">
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -202,11 +164,7 @@ export function Navbar() {
         <div className="absolute left-4 top-4 z-40 md:hidden">
           <Drawer direction="left">
             <DrawerTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Open menu"
-              >
+              <Button variant="ghost" size="icon" aria-label="Open menu">
                 <Menu className="h-6 w-6" />
               </Button>
             </DrawerTrigger>
@@ -240,22 +198,13 @@ export function Navbar() {
                 </Link>
               </div>
               <div className="flex flex-col gap-2 p-6 border-t">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push("/profile")}
-                >
+                <Button variant="outline" onClick={() => router.push("/profile")}>
                   Profile
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push("/messages")}
-                >
+                <Button variant="outline" onClick={() => router.push("/messages")}>
                   Messages
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={logout}
-                >
+                <Button variant="destructive" onClick={logout}>
                   Logout
                 </Button>
               </div>

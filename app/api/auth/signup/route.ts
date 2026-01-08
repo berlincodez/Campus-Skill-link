@@ -50,17 +50,13 @@ export async function POST(request: NextRequest) {
       createdAt: userWithoutPassword.createdAt || new Date().toISOString(),
     };
 
-    console.log(
-      "[Signup] Formatted user data:",
-      JSON.stringify(formattedUser, null, 2)
-    );
 
     return NextResponse.json({
       success: true,
       user: formattedUser,
     });
   } catch (error) {
-    console.error("[v0] Signup error:", error);
+    console.error("Signup error:", error);
     return NextResponse.json({ error: "Signup failed" }, { status: 500 });
   }
 }

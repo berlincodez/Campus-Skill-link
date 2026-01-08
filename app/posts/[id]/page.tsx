@@ -24,22 +24,11 @@ export default function PostDetailPage() {
   useEffect(() => {
     async function fetchPost() {
       try {
-        // Try both real and mock API endpoints
-        let res = await fetch(`/api/posts/${params.id}`);
-        let data, postData;
+        const res = await fetch(`/api/posts/${params.id}`);
         if (res.ok) {
-          data = await res.json();
-          postData = data.data || data;
-        } else {
-          res = await fetch(`/api/mock/posts/${params.id}`);
-          if (res.ok) {
-            data = await res.json();
-            postData = data.data || data;
-          }
-        }
-        if (postData) {
+          const data = await res.json();
+          const postData = data.data || data;
           setPost(postData);
-          // Fetch post owner details if available
           if (postData.userId) {
             const ownerRes = await fetch(`/api/users/${postData.userId}`);
             if (ownerRes.ok) {
@@ -49,7 +38,7 @@ export default function PostDetailPage() {
           }
         }
       } catch (error) {
-        console.error("[v0] Error fetching post:", error);
+        console.error("Error fetching post:", error);
       } finally {
         setLoading(false);
       }
@@ -83,7 +72,6 @@ export default function PostDetailPage() {
         postId: derivedPostId,
         acceptedById: derivedAcceptedById,
       };
-      console.log("[v0] Accepting post with payload:", payload);
 
       if (!payload.postId || !payload.acceptedById) {
         alert(
@@ -128,8 +116,7 @@ export default function PostDetailPage() {
         const data = await res.json();
         alert(data.error || "Failed to accept post");
       }
-    } catch (error) {
-      console.error("[v0] Error accepting post:", error);
+    } catch {
       alert("An error occurred");
     } finally {
       setAccepting(false);
@@ -153,22 +140,13 @@ export default function PostDetailPage() {
         ? String((post as any)._id)
         : (post as any).id || params.id;
 
-      // try real API first
-      let res = await fetch(`/api/posts/${derivedPostId}`, {
+      const res = await fetch(`/api/posts/${derivedPostId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          // include user id for simple ownership enforcement on server
           ...(user?.id ? { "x-user-id": String(user.id) } : {}),
         },
       });
-
-      if (!res.ok) {
-        // fallback to mock endpoint
-        res = await fetch(`/api/mock/posts/${derivedPostId}`, {
-          method: "DELETE",
-        });
-      }
 
       if (res.ok) {
         // redirect to my-posts
@@ -177,8 +155,7 @@ export default function PostDetailPage() {
         const data = await res.json().catch(() => ({}));
         alert(data?.error || "Failed to delete post");
       }
-    } catch (err) {
-      console.error("Error deleting post:", err);
+    } catch {
       alert("An error occurred while deleting the post");
     } finally {
       setDeleting(false);

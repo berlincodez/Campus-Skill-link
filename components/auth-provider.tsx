@@ -22,34 +22,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Public routes that don't require authentication
   const publicRoutes = ["/auth/login", "/auth/signup"];
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        console.log("AuthProvider: Initial mount, checking localStorage");
         const storedUser = localStorage.getItem("user");
-        console.log("AuthProvider: Raw stored user data:", storedUser);
 
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          console.log(
-            "AuthProvider: Parsed user data:",
-            JSON.stringify(parsedUser, null, 2)
-          );
-
-          // Log specific fields we're looking for
-          console.log("AuthProvider: Critical fields:", {
-            hasId: !!parsedUser.id,
-            hasEmail: !!parsedUser.email,
-            hasName: !!parsedUser.name,
-            id: parsedUser.id,
-            _id: parsedUser._id,
-          });
 
           if (parsedUser._id && !parsedUser.id) {
-            console.log("AuthProvider: Converting _id to id");
             parsedUser.id = parsedUser._id;
           }
 
@@ -60,7 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          // Ensure all required fields are present
           const normalizedUser = {
             id: parsedUser.id,
             email: parsedUser.email,
@@ -76,10 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             createdAt: parsedUser.createdAt || new Date().toISOString(),
           };
 
-          console.log("AuthProvider: Setting normalized user:", normalizedUser);
           setUser(normalizedUser);
         } else {
-          console.log("AuthProvider: No user found in localStorage");
           setUser(null);
         }
       } catch (error) {
@@ -95,24 +75,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (loading) return; // Wait until we've checked localStorage
-
-    console.log("Auth state:", {
-      user: !!user,
-      pathname,
-      isPublicRoute: publicRoutes.includes(pathname),
-    });
+    if (loading) return;
 
     if (!user) {
-      // If user is not authenticated and trying to access protected route
       if (!publicRoutes.includes(pathname)) {
-        console.log("Redirecting to login - no user");
         router.push("/auth/login");
       }
     } else {
-      // If user is authenticated and trying to access auth pages
       if (publicRoutes.includes(pathname)) {
-        console.log("Redirecting to home - user authenticated");
         router.push("/");
       }
     }
@@ -132,7 +102,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Don't render children until we've checked auth state
   if (!publicRoutes.includes(pathname) && !user) {
     return null;
   }

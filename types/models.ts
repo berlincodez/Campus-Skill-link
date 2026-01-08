@@ -10,27 +10,13 @@ export interface Post {
   department: string;
   location?: string;
   createdAt: string;
-  acceptedBy?: string; // userId who accepted/expressed interest
+  acceptedBy?: string;
   status?: "open" | "accepted" | "completed";
   author?: {
     _id: string;
     name: string;
     email: string;
   };
-}
-
-export interface Post {
-  _id?: string;
-  userId: string;
-  type: PostType;
-  title: string;
-  description: string;
-  category: string;
-  department: string;
-  location?: string;
-  createdAt: string;
-  acceptedBy?: string; // userId who accepted/expressed interest
-  status?: "open" | "accepted" | "completed";
 }
 
 export interface User {
@@ -65,8 +51,8 @@ export interface Connection {
 export interface Message {
   id: string;
   senderId: string;
-  recipientId?: string; // for 1-on-1 messages
-  groupId?: string; // for group messages
+  recipientId?: string;
+  groupId?: string;
   content: string;
   createdAt: string;
   read: boolean;
@@ -79,6 +65,6 @@ export interface StudyGroup {
   courseName: string;
   description: string;
   creatorId: string;
-  members: string[]; // array of userIds
+  members: string[];
   createdAt: string;
 }

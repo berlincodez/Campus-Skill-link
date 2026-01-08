@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -44,7 +43,6 @@ export default function SignupPage() {
     setError("");
     setLoading(true);
 
-    // basic client-side password confirmation check
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
@@ -52,7 +50,6 @@ export default function SignupPage() {
     }
 
     try {
-      console.log("Attempting signup with:", { ...formData, password: "***" });
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -60,11 +57,6 @@ export default function SignupPage() {
       });
 
       const data = await response.json();
-      console.log("Signup response:", {
-        ok: response.ok,
-        status: response.status,
-        data: JSON.stringify(data, null, 2),
-      });
 
       if (!response.ok) {
         setError(data.error || "Signup failed");
@@ -72,18 +64,10 @@ export default function SignupPage() {
         return;
       }
 
-      console.log("Signup successful, storing user data");
-
-      // The user data should already be properly formatted from the API
-      console.log("User data from API:", JSON.stringify(data.user, null, 2));
-
-      // Additional validation to ensure id field exists
       if (!data.user.id && data.user._id) {
-        console.log("Converting _id to id in signup");
         data.user.id = data.user._id;
       }
 
-      // Store the user data
       const userToStore = {
         ...data.user,
         reputationScore: data.user.reputationScore || 0,
@@ -91,15 +75,12 @@ export default function SignupPage() {
         createdAt: data.user.createdAt || new Date().toISOString(),
       };
 
-      console.log("Storing user data:", JSON.stringify(userToStore, null, 2));
       localStorage.setItem("user", JSON.stringify(userToStore));
 
-      // Small delay to ensure localStorage is updated and AuthProvider can pick up changes
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // Force a full page reload instead of client-side navigation
       window.location.href = "/";
-    } catch (err) {
+    } catch {
       setError("An error occurred. Please try again.");
       setLoading(false);
     }
@@ -115,10 +96,7 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            onSubmit={handleSignup}
-            className="space-y-4"
-          >
+          <form onSubmit={handleSignup} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
@@ -227,20 +205,13 @@ export default function SignupPage() {
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link
-              href="/auth/login"
-              className="text-primary hover:underline"
-            >
+            <Link href="/auth/login" className="text-primary hover:underline">
               Login
             </Link>
           </div>
