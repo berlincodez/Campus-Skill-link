@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "./auth-provider";
@@ -74,7 +75,16 @@ export function Navbar() {
       <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-lg">Campus Skill Link</span>
+            <Link href="/">
+              <Image
+                src="/images/logo.png"
+                alt="Wynk"
+                width={150}
+                height={40}
+                className="h-14 w-auto"
+                priority
+              />
+            </Link>
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" asChild>
@@ -93,7 +103,16 @@ export function Navbar() {
     <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <span className="font-semibold text-lg">Campus SkillLink</span>
+          <Link href="/">
+            <Image
+              src="/images/logo.png"
+              alt="Wynk"
+              width={150}
+              height={40}
+              className="h-14 w-auto"
+              priority
+            />
+          </Link>
         </div>
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-base">

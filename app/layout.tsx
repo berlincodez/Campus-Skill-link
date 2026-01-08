@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import { AuthProvider } from "@/components/auth-provider";
 
 export const metadata: Metadata = {
-  title: "Campus SkillLink",
+  title: "Wynk",
   description: "Created with v0",
   generator: "v0.app",
 };
